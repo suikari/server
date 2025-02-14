@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+    <div id="app">
+        <table>
+            <tr>
+                <th>제목</th>
+                <td><input id="title" v-model="title"></td>
+            </tr>
+            <tr>
+                <th>내용</th>
+                <td><textarea v-model="text" rows="10" cols="50"></textarea></td>
+
+            </tr>
+        </table>
+        <button @click="fnSave">저장</button>
+        <button @click="fnHome">돌아가기</button>
+    </div>
+</body>
+</html>
+
+<script>
+    const app = Vue.createApp({
+        data() {
+            return {
+                // 변수
+                userId : "user01",
+                title : "",
+                text : "",
+            };
+        },
+        methods: {
+            // 함수(메소드)
+            fnSave: function() { 
+                var self = this;
+                var nparmap = {userId : this.userId , title : this.title , text : this.text};
+                $.ajax({
+                    url: "http://localhost:3000/insert",  // 서버 주소 수정 (http:// 포함)
+                    dataType: "json",
+                    type: "POST", // GET, POST
+                    data: JSON.stringify(nparmap),   // 서버로 보낼 데이터
+                    contentType: "application/json",
+                    success: function(data) {
+                        //console.log(data);
+                        alert("저장완료!");
+                        location.href = "board_list.html";                            
+                    }
+                });
+            },
+            fnHome: function (boardNo){
+                location.href = "board_list.html";                            
+            }
+        },
+        mounted() {
+            // 처음 시작할 때 실행되는 부분
+        }
+    });
+
+    app.mount('#app');
+</script>
