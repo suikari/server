@@ -24,24 +24,16 @@
     <div id="app">
         <table>
             <tr>
-                <th>번호</th>
                 <th>제목</th>
-                <th>내용</th>
-                <th>작성자</th>
-                <th>조회수</th>
-                <th>작성일</th>
+                <td><input id="title" v-model="title"></td>
             </tr>
-            <tr v-for="item in list">
-                <td>{{item.BOARDNO}}</td>
-                <td>{{item.TITLE}}</td>
-                <td>{{item.CONTENTS}}</td>
-                <td>{{item.USERID}}</td>
-                <td>{{item.CNT}}</td>
-                <td>{{item.DATETIME}}</td>
+            <tr>
+                <th>내용</th>
+                <td><textarea v-model="contents" rows="10" cols="50"></textarea></td>
+
             </tr>
         </table>
-        <button @click="FnEdit(this.pagenum)">수정</button>
-        <button @click="fnRemove(this.pagenum)">삭제</button>
+        <button @click="FnEdit">수정</button>
         <button @click="fnHome">돌아가기</button>
 
     </div>
@@ -53,6 +45,8 @@
         data() {
             return {
                 list : [] ,
+                title : '',
+                contents : '',
                 pagenum : 0,
             };
         },
@@ -67,43 +61,31 @@
                     data: JSON.stringify(nparmap),   // 서버로 보낼 데이터
                     contentType: "application/json",
                     success: function(data) {
-                        //console.log(data);
-                        self.list = data.list;
+                        console.log(data);
+                        self.title = data.list[0].TITLE;
+                        self.contents = data.list[0].CONTENTS;
+
                     }
                 });
             },
-            fnRemove : function (boardNo){
+            fnHome: function (boardNo){
+                location.href = "board_list.html";                            
+            },
+            FnEdit : function (){
                 var self = this;
-                var nparmap = { boardNo : boardNo };
-
-                if(!(confirm("정말 삭제하시겠습니까?"))){
-                    return;
-                }
-                //console.log(nparmap); 
+                var nparmap = {boardNo : this.pagenum , title : this.title , contents : this.contents};
                 $.ajax({
-                    url: "http://localhost:3000/remove",  // 서버 주소 수정 (http:// 포함)
+                    url: "http://localhost:3000/update",  // 서버 주소 수정 (http:// 포함)
                     dataType: "json",
                     type: "POST", // GET, POST
                     data: JSON.stringify(nparmap),   // 서버로 보낼 데이터
                     contentType: "application/json",
                     success: function(data) {
-                        alert("삭제완료");
                         //console.log(data);
-                        location.href = "borad_list.html";
+                        alert("저장완료!");
+                        location.href = "board_list.html";                            
                     }
-                }); 
-
-                             
-            },
-            fnHome: function (){
-                location.href = "board_list.html";                            
-            },
-            FnEdit : function (boardNo){
-                //board-edit,html
-                //페이지이동시 게시글번호 같이
-                // board-edit.html 에서 boardno 변수로 저장
-                location.href = "board_edit.html?boardNo="+boardNo;
-
+                });                
             }
         },
         mounted() {

@@ -36,9 +36,9 @@ app.get('/', function (req, res) {
 // 로그인 API
 app.post('/login', async (req, res) => {
   console.log(req.body);
-  const { id, pwd } = req.body;  // 클라이언트에서 보낸 데이터
+  const { userId, userPwd } = req.body;  // 클라이언트에서 보낸 데이터
 
-  if (!id || !pwd) {
+  if (!userId || !userPwd) {
     return res.status(400).send({ msg: '아이디와 비밀번호를 입력해주세요.' });
   }
 
@@ -46,8 +46,8 @@ app.post('/login', async (req, res) => {
     const connection = await connectToDB();
     if (connection) {
       const result = await connection.execute(
-        `SELECT * FROM TBL_USER WHERE USERID = :id AND PASSWORD = :pwd`,
-        [id, pwd], // :id, :pwd 바인딩 변수
+        `SELECT USERID, USERNAME , NICKNAME FROM member WHERE USERID = : userId AND PASSWORD = :userPwd`,
+        [userId, userPwd], // :id, :pwd 바인딩 변수
         { outFormat: oracledb.OUT_FORMAT_OBJECT }
       );
 
@@ -79,6 +79,50 @@ app.post('/list', async (req, res) => {
         [], 
         { outFormat: oracledb.OUT_FORMAT_OBJECT }
       );
+      res.send({ msg: 'success', list : result.rows });
+      await connection.close();
+    } else {
+      res.status(500).send({ msg: 'DB 연결 실패' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ msg: '로그인 중 오류가 발생했습니다.' });
+  }
+});
+
+app.post('/userview', async (req, res) => {
+  const {userId} = req.body;  // 클라이언트에서 보낸 데이터
+  try {
+    const connection = await connectToDB();
+    if (connection) {
+      const result = await connection.execute(
+        `SELECT * FROM member WHERE USERID = : userId`,
+        [userId], 
+        { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      );
+      res.send({ msg: 'success', list : result.rows });
+      await connection.close();
+    } else {
+      res.status(500).send({ msg: 'DB 연결 실패' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ msg: '로그인 중 오류가 발생했습니다.' });
+  }
+});
+
+app.post('/update', async (req, res) => {
+  const {boardNo , title, contents  } = req.body;  // 클라이언트에서 보낸 데이터
+  try {
+    const connection = await connectToDB();
+    if (connection) {
+      const result = await connection.execute(
+        `UPDATE BOARD SET TITLE = :title , CONTENTS = :contents WHERE BOARDNO = :boardNo`,
+        [title, contents, boardNo], 
+        { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      );
+      
+      await connection.commit();
       res.send({ msg: 'success', list : result.rows });
       await connection.close();
     } else {
@@ -122,6 +166,7 @@ app.post('/view', async (req, res) => {
     res.status(500).send({ msg: '로그인 중 오류가 발생했습니다.' });
   }
 });
+
 
 app.post('/remove', async (req, res) => {
   console.log(req.body);

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인 페이지</title>
+    <style>
+body.mem_body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f3f4f6;
+    font-family: Arial, sans-serif;
+}
+
+.mem_container {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 100%;
+    max-width: 320px;
+}
+
+.mem_title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.mem_button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.mem_google-btn, .mem_anonymous-btn, .mem_login-btn {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.mem_google-btn {
+    background-color: #db4437;
+    color: white;
+}
+
+.mem_anonymous-btn {
+    background-color: #6b7280;
+    color: white;
+}
+
+.mem_login-btn {
+    background-color: #3b82f6;
+    color: white;
+    margin-top: 20px;
+}
+
+.mem_input-group {
+    margin-bottom: 10px;
+}
+
+.mem_input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.mem_signup-text {
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.mem_signup-link {
+    color: #3b82f6;
+    text-decoration: none;
+}
+
+.mem_signup-link:hover {
+    text-decoration: underline;
+}
+
+
+    </style>
+</head>
+<body class="mem_body">
+    <div class="mem_container">
+        <h2 class="mem_title">로그인</h2>
+        
+        <div class="mem_button-group">
+            <button class="mem_google-btn">구글 로그인</button>
+            <button class="mem_anonymous-btn">익명 로그인</button>
+        </div>
+        
+        <div class="mem_input-group">
+            <input type="text" placeholder="이름 입력" class="mem_input">
+        </div>
+        <div class="mem_input-group">
+            <input type="password" placeholder="패스워드 입력" class="mem_input">
+        </div>
+        
+        <button class="mem_login-btn">로그인</button>
+        <p class="mem_signup-text">
+            계정이 없으신가요? <a href="#" class="mem_signup-link">회원가입</a>
+        </p>
+    </div>
+</body>
+</html>
