@@ -25,7 +25,7 @@
         <table>
             <tr>
                 <th>번호</th>
-                <th>제목</th>
+                <th><a href="javascript:;" @click="fnOrder('title')">제목</a></th>
                 <th>작성자</th>
                 <th>조회수</th>
                 <th>작성일</th>
@@ -50,7 +50,8 @@
     const app = Vue.createApp({
         data() {
             return {
-                list : [] 
+                list : [] ,
+                orderkey : '',
             };
         },
         methods: {
@@ -98,12 +99,18 @@
             fnWrite : function () {
                 location.href = "board_insert.html";
             },
+            fnOrder : function (orderkey ){
+                let self = this
+                self.orderkey = orderkey;
+
+                self.fnList();
+            }
             
 
         },
         mounted() {
             // 처음 시작할 때 실행되는 부분
-            this.fnList();
+            this.list();
         }
     });
 

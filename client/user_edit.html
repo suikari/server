@@ -22,27 +22,26 @@
 </head>
 <body>
     <div id="app">
-        <table>
-            <tr>
-                <th>아이디</th>
-                <th>이름</th>
-                <th>이메일</th>
-                <th>핸드폰번호</th>
-                <th>닉네임</th>
-                <th>비고</th>
-            </tr>
-            <tr v-for="item in list">
-                <td>{{item.USERID}}</td>
-                <td>{{item.USERNAME}}</td>
-                <td>{{item.EMAIL}}</td>
-                <td>{{item.PHONE}}</td>
-                <td>{{item.NICKNAME}}</td>
-                <td><button @click="fnEdit">수정</button></td>
-
-            </tr>
-        </table>
-        <!-- <button @click="fnRemove(this.pagenum)">삭제</button> -->
-        <button @click="fnHome">로그아웃</button>
+        <div>
+            아이디 : {{user.USERID}}
+        </div>
+        <div>
+            이름 : <input v-model="user.USERNAME" type="text"> 
+        </div>
+        <div>
+            이메일 : <input v-model="user.EMAIL" type="text">  
+        </div>
+        <div>
+            핸드폰번호 : <input v-model="user.PHONE" type="text">  
+        </div>
+        <div>
+            성별 : 
+            <select v-model="user.GENDER">
+                <option value="M">남자</option>
+                <option value="F">여자</option>
+            </select>
+        </div>
+        <td><button @click="fnEdit">저장</button></td>
 
     </div>
 </body>
@@ -52,7 +51,7 @@
     const app = Vue.createApp({
         data() {
             return {
-                list : [] ,
+                user : [] ,
                 userid : 0,
             };
         },
@@ -67,39 +66,31 @@
                     data: JSON.stringify(nparmap),   // 서버로 보낼 데이터
                     contentType: "application/json",
                     success: function(data) {
-                        //console.log(data);
-                        self.list = data.list;
+                        console.log(data);
+                        self.user = data.list[0];
                     }
                 });
             },
-            // fnRemove : function (boardNo){
-            //     var self = this;
-            //     var nparmap = { boardNo : boardNo };
-
-            //     if(!(confirm("정말 삭제하시겠습니까?"))){
-            //         return;
-            //     }
-            //     //console.log(nparmap); 
-            //     $.ajax({
-            //         url: "http://localhost:3000/remove",  // 서버 주소 수정 (http:// 포함)
-            //         dataType: "json",
-            //         type: "POST", // GET, POST
-            //         data: JSON.stringify(nparmap),   // 서버로 보낼 데이터
-            //         contentType: "application/json",
-            //         success: function(data) {
-            //             alert("삭제완료");
-            //             //console.log(data);
-            //             location.href = "borad_list.html";
-            //         }
-            //     }); 
-
-                             
-            // },
             fnHome: function (){
                 location.href = "login.html";                            
             },
             fnEdit : function () {
-                location.href = "user_edit.html?userid="+this.userid;                            
+                var self = this;
+                //userId , USERNAME , EMAIL , PHONE ,GENDER
+                var nparmap = {userId : self.userid , USERNAME : self.user.USERNAME, EMAIL : self.user.EMAIL, PHONE : self.user.PHONE, GENDER : self.user.GENDER };
+                $.ajax({
+                    url: "http://localhost:3000/user/update",  // 서버 주소 수정 (http:// 포함)
+                    dataType: "json",
+                    type: "POST", // GET, POST
+                    data: JSON.stringify(nparmap),   // 서버로 보낼 데이터
+                    contentType: "application/json",
+                    success: function(data) {
+                        console.log(data);
+                        self.user = data.list[0];
+                    }
+                });
+
+                                          
             },
         },
         mounted() {

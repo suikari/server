@@ -135,6 +135,29 @@ app.post('/update', async (req, res) => {
 });
 
 
+app.post('/user/update', async (req, res) => {
+  const {userId , USERNAME , EMAIL , PHONE ,GENDER  } = req.body;  // 클라이언트에서 보낸 데이터
+  try {
+    const connection = await connectToDB();
+    if (connection) {
+      const result = await connection.execute(
+        `UPDATE member  SET USERNAME = :USERNAME , EMAIL = :EMAIL , PHONE = :PHONE , GENDER = :GENDER WHERE USERID = : userId`,
+        [USERNAME, EMAIL, PHONE  , GENDER ,userId], 
+        { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      );
+      
+      await connection.commit();
+      res.send({ msg: 'success', list : result.rows });
+      await connection.close();
+    } else {
+      res.status(500).send({ msg: 'DB 연결 실패' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ msg: '로그인 중 오류가 발생했습니다.' });
+  }
+});
+
 app.post('/view', async (req, res) => {
   const {boardNo} = req.body;  // 클라이언트에서 보낸 데이터
   try {
