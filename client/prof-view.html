@@ -30,9 +30,6 @@
             padding: 30px;
             height: 200px;
         }
-        .contents{
-            padding: 30px;
-        }
     </style>
 </head>
 <body>
@@ -40,58 +37,38 @@
         <div id="container">
             <table>
                 <tr>
-                    <th>제목</th>
-                    <td>{{info.TITLE}}</td>
+                    <th>이름</th>
+                    <td>{{info.NAME}}</td>
                 </tr>
                 <tr>
-                    <th>작성자</th>
-                    <td>{{info.USERNAME}}</td>
+                    <th>직책</th>
+                    <td>{{info.POSITION}}</td>
                 </tr>
                 <tr>
-                    <th>작성일</th>
-                    <td>{{info.CDATETIME}}</td>
+                    <th>급여</th>
+                    <td>{{info.PAY}}</td>
                 </tr>
                 <tr>
-                    <th>조회수</th>
-                    <td>{{info.CNT}}</td>
+                    <th>입사일</th>
+                    <td>{{info.HIREDATE}}</td>
                 </tr>
                 <tr>
-                    <th>내용</th>
-                    <td id="contents">{{info.CONTENTS}}</td>
+                    <th>학과명</th>
+                    <td >{{info.DNAME}}</td>
+                </tr>
+                <tr>
+                    <th>이메일</th>
+                    <td >{{info.EMAIL}}</td>
+                </tr>
+                <tr>
+                    <th>홈페이지</th>
+                    <td >{{info.HPAGE}}</td>
                 </tr>
             </table>
-            <div >   
-                <table>
-                    <tr>
-                        <th>작성자</th>
-                        <th>내용</th>
-
-                    </tr>
-                    <tr v-for="item in COMMENT_LIST ">
-                        <td style="width: 0px;">{{item.USERNAME}}</td>
-                        <td class="contents">{{item.CONTENTS}}</td>
-                    </tr>
-
-                </table>
-            </div>
-            <div >   
-                <table>
-                    <tr>
-                        <th>댓글 : </th>
-                        <td class="contents" style="width: 400px;"> 
-                            <textarea v-model="comment" name="" id="" style="width: 100%;" ></textarea>
-                        </td>
-                        <td style="width: 90px;">
-                            <button @click="fncomment" style="width: 100%;">저장</button>
-                        </td>
-                    </tr>
-                    
-                </table>
-            </div>
-
-            <div  style="margin-top : 10px">
-                <button style="margin-right: 5px;" @click="fnRemove">삭제</button>
-                <button @click="fnEdit">수정</button>
+            <div style="margin-top : 10px">
+                <!-- <button style="margin-right: 5px;" @click="fnRemove">삭제</button>
+                <button @click="fnEdit">수정</button> -->
+                <button @click="fnHome">목록</button> 
             </div>
         </div>
     </div>
@@ -103,25 +80,22 @@
         data() {
             return {
                 info : {},
-                COMMENT_LIST : [],
-                boardNo : "" ,
-                comment : ""
+                profNo : "" 
             };
         },
         methods: {
             fnInfo : function() { 
                 var self = this;
-                var nparmap = {boardNo : self.boardNo};
+                var nparmap = {profNo : self.profNo};
                 $.ajax({
-                    url: "http://localhost:3000/view",  // 서버 주소 수정 (http:// 포함)
+                    url: "http://localhost:3000/prof/view",  // 서버 주소 수정 (http:// 포함)
                     dataType: "json",
                     type: "POST", // GET, POST
                     data: JSON.stringify(nparmap),   // 서버로 보낼 데이터
                     contentType: "application/json",
                     success: function(data) {
-                        console.log(data);
+                        console.log(data.info);
                         self.info = data.info;
-                        self.COMMENT_LIST = data.info2;
                     }
                 });
             },
@@ -152,31 +126,19 @@
                 let self = this;
                 location.href="board-edit.html?boardNo="+self.boardNo;
             },
-            fncomment : function(){
-                let self = this;
-                var nparmap = { boardNo : self.boardNo , qqq : self.comment}; // {boardNo}
-                console.log(nparmap);
-                $.ajax({
-                    url: "http://localhost:3000/comment/insert",  // 서버 주소 수정 (http:// 포함)
-                    dataType: "json",
-                    type: "POST", // GET, POST
-                    data: JSON.stringify(nparmap),   // 서버로 보낼 데이터
-                    contentType: "application/json",
-                    success: function(data) {
-                        console.log(data);
-                        self.info = data.info;
-                        self.COMMENT_LIST = data.info2;
-                        self.fnInfo();
-                    }
-                });
-
+            fnHome : function(){
+                // board-edit.html 페이지로 이동
+                // 페이지 이동시에 게시글번호(boardNo)를 같이 보내고
+                // board-edit.html에서는 boardNo를 변수에 저장
+                location.href="prof-list.html"
             }
+
         }, // methods
         mounted() {
             // 처음 시작할 때 실행되는 부분
             const queryParams = new URLSearchParams(window.location.search);
-            this.boardNo = queryParams.get('boardNo'); 
-            console.log("boardNo ===> ", this.boardNo);
+            this.profNo = queryParams.get('profNo'); 
+            console.log("profNo ===> ", this.profNo);
             this.fnInfo();
         }
     });

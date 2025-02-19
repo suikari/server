@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>연습!!!!!!!!</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/4.3.0/apexcharts.min.js" integrity="sha512-QgLS4OmTNBq9TujITTSh0jrZxZ55CFjs4wjK8NXsBoZb04UYl8wWQJNaS8jRiLq6/c60bEfOj3cPsxadHICNfw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>    <style>
+        table, tr, th, td {
+            text-align: center;
+            border : 2px solid #bbb;
+            border-collapse: collapse;
+            padding : 5px;
+        }
+        th {
+            color : rgb(132, 39, 219);
+            background-color: aliceblue;
+            /* font-size: 30px; */
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+            <div id="chart"></div>
+    </div>
+</body>
+</html>
+
+<script>
+    const app = Vue.createApp({
+        data() {
+            return {
+            
+                options : {
+                    series: [44, 55, 13, 43, 22],
+                    chart: {
+                    width: 380,
+                    type: 'pie',
+                    },
+                    labels: ['Team A', 'Team B', 'Team C', 'Team D', 'Team E'],
+                    responsive: [{
+                    breakpoint: 480,
+                    options: {
+                        chart: {
+                        width: 200
+                        },
+                        legend: {
+                        position: 'bottom'
+                        }
+                    }
+                    }]
+                },
+
+
+            }
+        },
+        methods: {
+            fnList : function() { 
+                var self = this;
+                var nparmap = { };
+                $.ajax({
+                    url: "http://localhost:3000/emp/list2",  // 서버 주소 수정 (http:// 포함)
+                    dataType: "json",
+                    type: "POST", // GET, POST
+                    data: JSON.stringify(nparmap),   // 서버로 보낼 데이터
+                    contentType: "application/json",
+                    success: function(data) {
+                        console.log(data.list);
+                        self.options.series = [];
+                        self.options.labels = [];
+                        for (i=0;i<data.list.length;i++) {
+                            self.options.series.push(data.list[i].SAL);
+                            self.options.labels.push(data.list[i].DNAME);
+                        }
+                        var chart = new ApexCharts(document.querySelector("#chart"), self.options);
+                        chart.render();
+                    }
+
+                });
+
+
+
+            },
+        },
+        mounted() {
+            // 처음 시작할 때 실행되는 부분
+            let self = this;
+            this.fnList();
+
+        }
+    });
+
+    app.mount('#app');
+
+
+
+      
+
+</script>

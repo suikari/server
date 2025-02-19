@@ -70,6 +70,7 @@
             </div>
             <table>
                 <tr>
+                    <th>선택</th>
                     <th>교수번호</th>
                     <th>
                         <a href="javascript:;" @click="fnOrder('NAME')">이름</a>
@@ -84,12 +85,16 @@
                     <th>학과명</th>
                 </tr>
                 <tr v-for="item in list">
+                    <td>
+                        <input type="checkbox" v-model="selectList" :value="item.PROFNO"/>
+
+                    </td>
                     <td>{{item.PROFNO}}</td>
                     <td>
-                        <a href="javascript:;" @click="fnView(item.NAME)">{{item.NAME}}</a>
+                        <a href="javascript:;" @click="fnView(item.PROFNO)">{{item.NAME}}</a>
                     </td>
                     <td>
-                        <a href="javascript:;" @click="fnUser(item.POSITION)">{{item.POSITION}}</a>
+                        {{item.POSITION}}
                     </td>
                     <td>{{item.PAY}}</td>
                     <td>{{item.HIREDATE}}</td>
@@ -125,9 +130,10 @@
                 </a>
             </div>
             <div>
-                <button @click="fnInsert">글쓰기</button>
+                <button @click="fnRemove">삭제</button>
             </div>
             <div style="margin-bottom : 300px;"></div>
+            <span>check: {{ selectList }}</span>
         </div>
     </div>
 </body>
@@ -144,7 +150,8 @@
                 orderType : "",
                 index : 0,
                 pageSize : 5,
-                page : 1
+                page : 1 , 
+                selectList : [],
             };
         },
         methods: {
@@ -171,28 +178,26 @@
                     }
                 });
             },
-            // fnRemove : function(boardNo){
-            //     var self = this;
-            //     var nparmap = {boardNo : boardNo}; // {boardNo}
-            //     if(!confirm("정말 삭제할거?")){
-            //         return;
-            //     }
-            //     $.ajax({
-            //         url: "http://localhost:3000/remove",  // 서버 주소 수정 (http:// 포함)
-            //         dataType: "json",
-            //         type: "POST", // GET, POST
-            //         data: JSON.stringify(nparmap),   // 서버로 보낼 데이터
-            //         contentType: "application/json",
-            //         success: function(data) {
-            //             alert("삭제되었습니다!");
-            //             console.log(data);
-            //             self.fnList();
-                        
-            //         }
-            //     });
-            // },
-            fnView : function(boardNo){
-                location.href = "board-view.html?boardNo="+boardNo;
+            fnRemove : function(){
+                var self = this;
+                var nparmap = { proflist : self.selectList}; // {boardNo}
+
+                $.ajax({
+                    url: "http://localhost:3000/prof/remove",  // 서버 주소 수정 (http:// 포함)
+                    dataType: "json",
+                    type: "POST", // GET, POST
+                    data: JSON.stringify(nparmap),   // 서버로 보낼 데이터
+                    contentType: "application/json",
+                    success: function(data) {
+                        console.log(data);
+                        self.fnList();
+
+                    }
+                });
+
+            },
+            fnView : function(profNo){
+                location.href = "prof-view.html?profNo="+profNo;
             },
             fnInsert : function(){
                 location.href = "board-insert.html";
