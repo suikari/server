@@ -65,11 +65,36 @@
                     <tr>
                         <th>작성자</th>
                         <th>내용</th>
+                        <th></thth>
 
                     </tr>
-                    <tr v-for="item in COMMENT_LIST ">
+                    <tr v-for="(item , index) in COMMENT_LIST ">
                         <td style="width: 0px;">{{item.USERNAME}}</td>
-                        <td class="contents">{{item.CONTENTS}}</td>
+                        
+                        <template  v-if="rewrite_index != index "> 
+                            <td class="contents">{{item.CONTENTS}}</td>
+
+                            <td style="width: 90px;">
+                                <button style="margin-right: 5px;" @click="fncomRemove(item.COMMENTNO)">삭제</button>
+                                <button @click="fncomEdit(index, item.CONTENTS)">수정</button>                       
+                            </td>
+
+                        </template>
+                        
+ 
+                        <template   v-else > 
+                            <td><input v-model="re_comment"  style="width: 90%;"> </input></td>
+
+                            <td style="width: 90px;">
+                                <button style="margin-right: 5px;" @click="fncomEditCommit(item.COMMENTNO)">저장</button>
+                                <button @click="fncomEditCancel">취소</button>                       
+                            </td>
+                            
+                        </template>
+
+
+                        
+
                     </tr>
 
                 </table>
@@ -105,12 +130,17 @@
                 info : {},
                 COMMENT_LIST : [],
                 boardNo : "" ,
-                comment : ""
+                comment : "",
+                re_comment : "" ,
+                comment_rewrite : false ,
+                rewrite_index : -1 ,
+                
             };
         },
         methods: {
             fnInfo : function() { 
                 var self = this;
+                self.rewrite_index = -1;
                 var nparmap = {boardNo : self.boardNo};
                 $.ajax({
                     url: "http://localhost:3000/view",  // 서버 주소 수정 (http:// 포함)
@@ -170,7 +200,54 @@
                     }
                 });
 
-            }
+            },
+            fncomEdit : function ( indexnum  , commenttext ) {
+                let self = this;
+                self.rewrite_index = indexnum ;
+                self.re_comment = commenttext;
+
+            },
+            fncomEditCommit : function (commentnum){
+                let self = this;
+                let nparmap = {CONTENTS : self.re_comment , COMMENTNO : commentnum  } 
+                $.ajax({
+                    url: "http://localhost:3000/comment/edit",  // 서버 주소 수정 (http:// 포함)
+                    dataType: "json",
+                    type: "POST", // GET, POST
+                    data: JSON.stringify(nparmap),   // 서버로 보낼 데이터
+                    contentType: "application/json",
+                    success: function (data) {
+                        if(data.msg == "success"){
+                            alert("수정되었습니다.");
+                            self.fnInfo();                        
+                        }
+                    }
+                });
+            },
+            fncomEditCancel : function ( ) {
+                let self = this;
+                self.rewrite_index = -1 ;
+                self.re_comment = '';
+
+            },
+            fncomRemove : function(num){
+                var self = this;
+                var nparmap = {commentNo : num}; // {boardNo}
+                if(!confirm("정말 삭제할거?")){
+                    return;
+                }
+                $.ajax({
+                    url: "http://localhost:3000/comment/remove",  // 서버 주소 수정 (http:// 포함)
+                    dataType: "json",
+                    type: "POST", // GET, POST
+                    data: JSON.stringify(nparmap),   // 서버로 보낼 데이터
+                    contentType: "application/json",
+                    success: function(data) {
+                        alert("삭제되었습니다!");
+                        self.fnInfo();                        
+                    }
+                });
+            },
         }, // methods
         mounted() {
             // 처음 시작할 때 실행되는 부분

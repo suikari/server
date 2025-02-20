@@ -232,10 +232,11 @@ app.post('/view', async (req, res) => {
 
 
       const result1 = await connection.execute(
-        `SELECT M.USERNAME  USERNAME , B.CONTENTS ,  TO_CHAR(B.CDATETIME, 'YYYY-MM-DD') AS CDATETIME
+        `SELECT B.COMMENTNO, M.USERNAME  USERNAME , B.CONTENTS ,  TO_CHAR(B.CDATETIME, 'YYYY-MM-DD') AS CDATETIME
           from board_comment B 
          INNER JOIN MEMBER M ON B.USERID = M.USERID 
-         WHERE BOARDNO = :boardNo`,
+         WHERE BOARDNO = :boardNo 
+         order by B.CDATETIME `,
         [boardNo], 
         { outFormat: oracledb.OUT_FORMAT_OBJECT }
       );
@@ -522,6 +523,90 @@ app.post('/comment/insert', async (req, res) => {
     res.status(500).send({ msg: '작성 중 오류가 발생했습니다.' });
   }
 });
+
+
+
+
+app.post('/comment/update', async (req, res) => {
+  console.log(req.body);
+  const { commentNo } = req.body;  // 클라이언트에서 보낸 데이터
+  try {
+    const connection = await connectToDB();
+    if (connection) {
+      const result = await connection.execute(
+        `DELETE FROM BOARD_COMMENT WHERE COMMENTNO = :commentNo`,
+        [commentNo], 
+        { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      );
+      
+      await connection.commit();
+      res.send({ msg: 'success'});
+      await connection.close();
+    } else {
+      res.status(500).send({ msg: 'DB 연결 실패' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ msg: '로그인 중 오류가 발생했습니다.' });
+  }
+});
+
+
+
+app.post('/comment/edit', async (req, res) => {
+  console.log(req.body);
+  const { CONTENTS, COMMENTNO } = req.body;  // 클라이언트에서 보낸 데이터
+  try {
+    const connection = await connectToDB();
+    if (connection) {
+      const result = await connection.execute(
+        `UPDATE BOARD_COMMENT 
+         SET 
+            CONTENTS = :CONTENTS,
+            UDATETIME = SYSDATE
+          WHERE COMMENTNO = :COMMENTNO`,
+        [ CONTENTS, COMMENTNO], 
+        { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      );
+      
+      await connection.commit();
+      res.send({ msg: 'success'});
+      await connection.close();
+    } else {
+      res.status(500).send({ msg: 'DB 연결 실패' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ msg: '로그인 중 오류가 발생했습니다.' });
+  }
+});
+
+app.post('/comment/remove', async (req, res) => {
+  console.log(req.body);
+  const { commentNo } = req.body;  // 클라이언트에서 보낸 데이터
+  try {
+    const connection = await connectToDB();
+    if (connection) {
+      const result = await connection.execute(
+        `DELETE FROM BOARD_COMMENT WHERE COMMENTNO = :commentNo`,
+        [commentNo], 
+        { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      );
+      
+      await connection.commit();
+      res.send({ msg: 'success'});
+      await connection.close();
+    } else {
+      res.status(500).send({ msg: 'DB 연결 실패' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ msg: '로그인 중 오류가 발생했습니다.' });
+  }
+});
+
+
+
 
 app.listen(3000, () => {
   console.log('서버가 3000 포트에서 실행 중입니다.');
